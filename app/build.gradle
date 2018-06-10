@@ -52,10 +52,7 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:$project.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$project.retrofitVersion"
 
-    // ButterKnife
-    implementation "com.jakewharton:butterknife:$project.butterKnifeVersion"
     implementation 'com.android.support.constraint:constraint-layout:1.1.1'
-    annotationProcessor "com.jakewharton:butterknife-compiler:$project.butterKnifeVersion"
 
     // http log
     implementation "com.squareup.okhttp3:logging-interceptor:$project.httpLogging"
