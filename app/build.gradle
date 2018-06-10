@@ -32,6 +32,8 @@ android {
         }
     }
 
+    dataBinding.enabled = true
+
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
@@ -52,6 +54,7 @@ dependencies {
 
     // ButterKnife
     implementation "com.jakewharton:butterknife:$project.butterKnifeVersion"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
     annotationProcessor "com.jakewharton:butterknife-compiler:$project.butterKnifeVersion"
 
     // http log

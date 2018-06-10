@@ -1,67 +1,51 @@
 package com.brian.brianmvvm;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.brian.brianmvvm.callback.EarthQuakeItemCallback;
+import com.brian.brianmvvm.databinding.ActivityMainBinding;
 import com.brian.brianmvvm.domain.Earthquake;
-import com.brian.brianmvvm.earthquakes.EarthquakeInteractor;
 import com.brian.brianmvvm.earthquakes.EarthquakeListViewModel;
 import com.brian.brianmvvm.earthquakes.EarthquakeListViewModelFactory;
 import com.brian.brianmvvm.earthquakes.EarthquakesListAdapter;
-import com.brian.brianmvvm.network.ApiClientService;
-import com.brian.brianmvvm.network.EarthquakeApi;
-import com.brian.brianmvvm.network.EarthquakeService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EarthQuakeItemCallback {
 
     EarthquakeListViewModelFactory viewModelFactory;
 
     private EarthquakeListViewModel viewModel;
 
-    @BindView(R.id.loading_indicator)
-    ProgressBar loadingIndicator;
-
-    @BindView(R.id.recyclerView)
-    RecyclerView mRecyclerEarths;
-
     private List<Earthquake> mEarthquakes;
 
     private EarthquakesListAdapter mAdapter;
 
+    private ActivityMainBinding mainBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
+        mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         viewModelFactory = Injection.provideViewModelFactory(this);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(EarthquakeListViewModel.class);
 
-        mRecyclerEarths.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerEarths.setHasFixedSize(true);
-
         mEarthquakes = new ArrayList<>();
-        mAdapter = new EarthquakesListAdapter(mEarthquakes);
+        mAdapter = new EarthquakesListAdapter(mEarthquakes, this);
 
-        mRecyclerEarths.setAdapter(mAdapter);
-
+        mainBinding.recyclerView.setHasFixedSize(true);
+        mainBinding.recyclerView.setAdapter(mAdapter);
 
         viewModel.loadEarthQuakeList();
-
 
         observeLoadingStatus();
 
@@ -69,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         observeError();
     }
+
 
     private void observeLoadingStatus() {
         viewModel.getLoadingStatus().observe(this, this::processLoadingStatus);
@@ -88,11 +73,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void processLoadingStatus(boolean isLoading) {
-        loadingIndicator.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        mainBinding.loadingIndicator.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }
 
     private void processError(Throwable error) {
         Toast.makeText(this, "Error " + error, Toast.LENGTH_LONG).show();
         //deal with errors
+    }
+
+    @Override
+    public void onItemClick(Earthquake earthquake) {
+        startActivity(DetailActivity.startIntent(this, earthquake));
     }
 }

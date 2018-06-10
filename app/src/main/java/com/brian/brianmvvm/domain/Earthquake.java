@@ -1,10 +1,13 @@
 package com.brian.brianmvvm.domain;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * @author Brian
  * @date: 6/5/18
  */
-public class Earthquake {
+public class Earthquake implements Parcelable {
 
     private Double magnitude;
     private String place;
@@ -78,4 +81,47 @@ public class Earthquake {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.magnitude);
+        dest.writeString(this.place);
+        dest.writeString(this.time);
+        dest.writeString(this.url);
+        dest.writeString(this.detail);
+        dest.writeString(this.status);
+        dest.writeString(this.type);
+        dest.writeString(this.title);
+    }
+
+    public Earthquake() {
+    }
+
+    protected Earthquake(Parcel in) {
+        this.magnitude = (Double) in.readValue(Double.class.getClassLoader());
+        this.place = in.readString();
+        this.time = in.readString();
+        this.url = in.readString();
+        this.detail = in.readString();
+        this.status = in.readString();
+        this.type = in.readString();
+        this.title = in.readString();
+    }
+
+    public static final Parcelable.Creator<Earthquake> CREATOR = new Parcelable.Creator<Earthquake>() {
+        @Override
+        public Earthquake createFromParcel(Parcel source) {
+            return new Earthquake(source);
+        }
+
+        @Override
+        public Earthquake[] newArray(int size) {
+            return new Earthquake[size];
+        }
+    };
 }
